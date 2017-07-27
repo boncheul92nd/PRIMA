@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#999999">
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="160dp"
+        android:layout_height="90dp"
+        android:src="#000000"/>
+
+    <TextView
+        android:id="@id/plateNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="02 HU 9757"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/imageButton"
+        android:layout_marginStart="10dp" />
+
+    <TextView
+        android:id="@+id/place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Enginering 5th"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/imageButton"
+        android:layout_marginStart="10dp" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentRight="true"
+        android:text="16:00"
+        android:layout_marginRight="10dp" />
+
+    <Button
+        android:id="@+id/remove"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="50dp"
+        android:text="X"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

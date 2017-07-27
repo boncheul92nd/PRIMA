@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/RL1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#58FAF4" >
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            app:srcCompat="@android:color/holo_blue_bright" />
+
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="X"
+            android:layout_alignTop="@id/imageView"
+            android:layout_alignLeft="@id/imageView"
+            android:layout_marginTop="-6dp"
+            android:layout_marginLeft="-4dp"/>
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:inputType="textPersonName"
+            android:text="Plate Recognition"
+            android:layout_toEndOf="@+id/imageView" />
+
+        <EditText
+            android:id="@+id/plateNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/text"
+            android:text="12 가 3456"
+            android:layout_toEndOf="@+id/imageView" />
+
+        <TextView
+            android:id="@+id/Text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/Date"
+            android:layout_below="@id/Date"
+            android:layout_marginTop="-17dp"
+            android:text="2017-07-18 16:00:00" />
+
+        <TextView
+            android:id="@+id/Date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView"
+            android:text="Date:" />
+
+        <EditText
+            android:id="@+id/Text3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Text2"
+            android:layout_alignParentStart="true"
+            android:text="Item List" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/plateNumber"
+            android:layout_marginTop="100dp"
+            android:layout_marginLeft="290dp"
+            android:text="Posting"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="180dp"
+        android:layout_height="120dp"
+        android:layout_below="@id/RL1"
+        android:layout_margin="5dp"
+        app:srcCompat="@android:color/holo_blue_dark" />
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="180dp"
+        android:layout_height="120dp"
+        android:layout_below="@id/RL1"
+        android:layout_margin="5dp"
+        android:layout_toEndOf="@id/imageView1"
+        app:srcCompat="@android:color/holo_green_dark" />
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="180dp"
+        android:layout_height="120dp"
+        android:layout_margin="5dp"
+        android:layout_below="@id/imageView1"
+        app:srcCompat="@android:color/holo_blue_bright" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="180dp"
+        android:layout_height="120dp"
+        android:layout_below="@id/imageView2"
+        android:layout_toEndOf="@id/imageView3"
+        android:layout_alignBottom="@id/imageView3"
+        android:layout_margin="5dp"
+        app:srcCompat="@android:color/holo_orange_dark" />
+
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="X"
+        android:layout_alignTop="@id/imageView1"
+        android:layout_marginTop="-6dp"
+        android:layout_marginLeft="2dp"/>
+
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="X"
+        android:layout_alignTop="@id/imageView2"
+        android:layout_alignLeft="@id/imageView2"
+        android:layout_marginTop="-6dp"
+        android:layout_marginLeft="-4dp"/>
+
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="X"
+        android:layout_alignTop="@id/imageView3"
+        android:layout_alignLeft="@id/imageView3"
+        android:layout_marginTop="-6dp"
+        android:layout_marginLeft="-4dp"/>
+
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="X"
+        android:layout_alignTop="@id/imageView4"
+        android:layout_alignLeft="@id/imageView4"
+        android:layout_marginTop="-6dp"
+        android:layout_marginLeft="-4dp"/>
+
+</RelativeLayout>
