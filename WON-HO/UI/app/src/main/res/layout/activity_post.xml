@@ -47,6 +47,13 @@
             android:layout_toEndOf="@+id/imageView" />
 
         <TextView
+            android:id="@+id/Date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView"
+            android:text="Date:" />
+
+        <TextView
             android:id="@+id/Text2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,12 +62,7 @@
             android:layout_marginTop="-17dp"
             android:text="2017-07-18 16:00:00" />
 
-        <TextView
-            android:id="@+id/Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/imageView"
-            android:text="Date:" />
+
 
         <EditText
             android:id="@+id/Text3"

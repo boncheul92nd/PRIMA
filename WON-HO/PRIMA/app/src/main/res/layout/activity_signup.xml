@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/linearLayout1">
+
+        <TextView
+            android:id="@+id/textid"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="ID" />
+
+        <EditText
+            android:id="@+id/id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Input ID" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/linearLayout1">
+
+        <TextView
+            android:id="@+id/textpassword"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Password"/>
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="input Password"
+            android:inputType="textPassword"
+            android:layout_alignBottom="@+id/linearLayout2"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/linearLayout2">
+
+        <TextView
+            android:id="@+id/textpasswordre"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="re-Password"
+            android:layout_alignBaseline="@+id/passwordre"
+            android:layout_alignBottom="@+id/passwordre"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:id="@+id/passwordre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password Retype"
+            android:inputType="textPassword"
+            android:layout_below="@+id/linearLayout2"
+            android:layout_toEndOf="@+id/textpasswordre" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/linearLayout3">
+
+        <TextView
+            android:id="@+id/textname"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Name"/>
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Input Name"
+            android:inputType="textPersonName"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/linearLayout5"
+        android:layout_below="@id/linearLayout4">
+
+        <TextView
+            android:id="@+id/textphone"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Phone Number" />
+
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Input Phone Number"
+            android:inputType="textPhonetic"
+            android:layout_alignBaseline="@id/textphone"
+            android:layout_alignBottom="@id/textphone" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/signup"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="100dp"
+        android:text="Sign Up"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="100dp" />
+
+    <Button
+        android:id="@+id/cancle"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:text="Cancle"
+        android:layout_toEndOf="@id/signup"
+        android:layout_alignTop="@id/signup" />
+
+</RelativeLayout>
