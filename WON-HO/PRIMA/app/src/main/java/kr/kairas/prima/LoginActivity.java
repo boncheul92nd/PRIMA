@@ -21,4 +21,8 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
         startActivity(intent);
     }
+
+    public void cancle(View v) {
+        finish();
+    }
 }
