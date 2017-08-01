@@ -14,12 +14,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void login(View v) {
-        Intent intent=new Intent(MainActivity.this, LoginActivity.class);
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
 
     public void signup(View v) {
-        Intent intent=new Intent(MainActivity.this, SignupActivity.class);
+        Intent intent = new Intent(MainActivity.this, SignupActivity.class);
         startActivity(intent);
     }
 }
