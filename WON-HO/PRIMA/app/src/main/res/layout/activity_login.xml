@@ -60,6 +60,7 @@
 
     <Button
         android:id="@+id/cancle"
+        android:onClick="cancle"
         android:layout_width="80dp"
         android:layout_height="50dp"
         android:text="Cancle"

@@ -12,6 +12,7 @@
 
         <ImageView
             android:id="@+id/imageView"
+            android:onClick="imageupload"
             android:layout_width="200dp"
             android:layout_height="150dp"
             android:layout_alignParentStart="true"
