@@ -1,0 +1,21 @@
+//
+   Created by USER on 2017-08-01.
+doctype html
+html
+    haed
+        meta(charset='utf-8')
+        title PRIMA
+    body
+        h1 주차관리 게시판
+        table(border='2')
+            tr
+                td 날짜
+                td 위치
+                td 차량번호
+                td 사진
+            each i in result
+                tr
+                    td #{i.date}
+                    td #{i.location}
+                    td #{i.number}
+                    td null

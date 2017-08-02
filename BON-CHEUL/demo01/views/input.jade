@@ -1,0 +1,19 @@
+//
+   Created by USER on 2017-08-01.
+
+doctype html
+html
+    head
+        title PRIMA
+    body
+        h1 입력페이지
+        form(enctype='multipart/form-data', action='/api/photo', method='post')
+            p
+                input(type='date' name='date', placeholder='date')
+            p
+                input(type='text' name='location', placeholder='location')
+            p
+                input(type='text' name='number', placeholder='number')
+            p
+                input(type='file', name='userPhoto')
+                input(type='submit')

@@ -1,0 +1,12 @@
+{
+  "name": "demo01",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "~4.10.2",
+    "fs": "0.0.1-security",
+    "jade": "^1.11.0",
+    "mongodb": "^2.2.30",
+    "mongoose": "^4.11.5",
+    "multer": "~0.1.6"
+  }
+}
