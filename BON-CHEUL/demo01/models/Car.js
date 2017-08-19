@@ -5,7 +5,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var CarSchema = new Schema({
-    date:{type:Date, default:Date.now},
+    date:{
+        type:Date,
+        default:Date.now
+    },
     location:String,
     number:String
 });

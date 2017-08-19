@@ -2,10 +2,13 @@
  * Created by USER on 2017-08-01.
  */
 
-var mogoose = require('mongoose');
-var Schema = mogoose.Schema;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 var PhotoSchema = new Schema({
-    img: {data:Buffer, contentType:String}
+    img: {
+        data:Buffer,
+        contentType:String
+    }
 });
 
-module.exports = mogoose.model('Photos', PhotoSchema);
+module.exports = mongoose.model('Photos', PhotoSchema);
