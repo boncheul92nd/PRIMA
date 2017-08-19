@@ -1,0 +1,53 @@
+//
+   Created by USER on 2017-08-11.
+doctype html
+html
+    haed
+        meta(charset='utf-8')
+        title PRIMA
+    body
+        h1 회원가입 화면
+
+        form(enctype='multipart/form-data', action='/register', method='post' onsubmit='return validateForm();')
+            p 아아디
+                input(type='text', name='username', placeholder='6~15 알파벳+숫자' required)
+            p 비밀번호
+                input(type='password' name='password', placeholder='6~20 알파벳+숫자+특수기호' required)
+            p 비밀번호 확인
+                input(type='password', name='password_confirm', placeholder='6~20 알파벳+숫자+특수기호', required)
+            p
+                input(type='submit')
+    script.
+
+        function validateID() {
+            var username = document.getElementsByName('username')[0].value;
+
+            if (!/^[a-zA-Z0-9]{6,15}$/g.test(username)) {
+                alert('아이디 형식이 옳바르지 않습니다.');
+                return false;
+            }
+            return true;
+        }
+        function dupleIDCheck() {
+            var username = document.getElementsByName('username')[0].value;
+        }
+        function validatePWD() {
+            var password = document.getElementsByName('password')[0].value;
+            var password_confirm = document.getElementsByName('password_confirm')[0].value;
+
+            if(password_confirm != password) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return false;
+            } else if(!/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{6,20}$/g.test(password)) {
+                alert('비밀번호 형식이 옳바르지 않습니다.');
+                return false;
+            }
+            return true;
+        }
+
+        function validateForm() {
+            if(validateID() && validatePWD()) {
+                return true;
+            }
+            return false;
+        }
