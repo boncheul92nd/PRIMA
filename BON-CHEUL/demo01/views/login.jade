@@ -1,0 +1,17 @@
+//
+   Created by USER on 2017-08-11.
+doctype html
+html
+    haed
+        meta(charset='utf-8')
+        title PRIMA
+    body
+        h1 로그인 화면
+        form(enctype='multipart/form-data', action='/login', method='post')
+            p
+                input(type='text', name='username', placeholder='id', required)
+            p
+                input(type='password' name='password', placeholder='password' required)
+            p
+                input(type='submit')
+        a(href='/register') 회원가입
