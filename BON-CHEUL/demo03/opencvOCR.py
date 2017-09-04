@@ -74,11 +74,16 @@ def ocr_tesseract(fullPath):
     im = Image.open(image_file)
     tesseract_path = 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract'
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
-    text = pytesseract.image_to_string(im, lang='kor')
+
+    textKor = pytesseract.image_to_string(im, lang='kor')
+    textEng = pytesseract.image_to_string(im)
+
     f = open(fullPath+'Result.txt', 'w')
-    f.write(text)
+    f.write(textKor)
     f.close()
-    print text
+
+    print textKor
+    print textEng
 
 def auto_scan_image(path):
    fullPath = './uploads'+path
@@ -93,8 +98,7 @@ def auto_scan_image(path):
    screenCnt = find_contour(edged, image, fullPath)
    warped = perspective_transform(orig, r, screenCnt, fullPath)
    adaptive_threshold(orig, warped, fullPath)
-   result = ocr_tesseract(fullPath)
-
+   ocr_tesseract(fullPath)
 
 if __name__ == '__main__':
     path = sys.argv[1]
@@ -104,6 +108,7 @@ if __name__ == '__main__':
     Outline = open('./uploads' + path + 'Outline.png', 'rb').read()
     Warped = open('./uploads' + path + 'Warped.png', 'rb').read()
     Scanned = open('./uploads' + path + 'Scanned.png', 'rb').read()
+    Result = open('./uploads' + path + 'Result.txt', 'rb').read()
 
     connection = pymongo.MongoClient("localhost", 27017)
     db = connection.PRIMA_DB
@@ -126,6 +131,7 @@ if __name__ == '__main__':
             "img_scanned": {
                 "data": Binary(Scanned),
                 "contentType": "image/png"
-            }
+            },
+            "number":Result
         }
     });
