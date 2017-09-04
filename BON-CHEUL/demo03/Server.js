@@ -42,7 +42,6 @@ app.use(multer({
 
 app.get('/', function (req, res) {
     Record.find({}).exec(function (err, result) {
-        // console.log(result[0].img_edged.data.toString('base64'));
         res.render('index', {result:result});
     });
 });
@@ -67,6 +66,15 @@ app.post('/input', function (req, res) {
     res.redirect('/');
 });
 
+app.get('/delete/:id', function (req, res) {
+
+    var date = req.params.id;
+    Record.find({"date":date}).select({
+        "date":1, "location":1}).exec(function (err, result) {
+        res.send(result);
+    });
+});
+
 function genDirnames() {
     var dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
     var d = new Date();
@@ -75,7 +83,9 @@ function genDirnames() {
     var tempMonth = (d.getUTCMonth()+1).toString(),
         month = (tempMonth.length < 2)? '0'+tempMonth : tempMonth;
 
-    var date = d.getUTCDate();
+    var tempDate = d.getUTCDate().toString(),
+        date = (tempDate.length < 2)? '0'+tempDate : tempDate;
+
     var day = dayArr[d.getUTCDay()-1];
     var hour = d.getHours();
 
