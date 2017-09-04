@@ -10,9 +10,9 @@
         android:layout_height="wrap_content"
         android:background="#58FAF4" >
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:onClick="imageupload"
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:onClick="onClick"
             android:layout_width="200dp"
             android:layout_height="150dp"
             android:layout_alignParentStart="true"
@@ -23,8 +23,9 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:text="X"
-            android:layout_alignTop="@id/imageView"
-            android:layout_alignLeft="@id/imageView"
+            android:onClick="onClick"
+            android:layout_alignTop="@id/imageButton"
+            android:layout_alignLeft="@id/imageButton"
             android:layout_marginTop="-6dp"
             android:layout_marginLeft="-4dp"/>
 
@@ -36,7 +37,7 @@
             android:layout_alignParentTop="true"
             android:inputType="textPersonName"
             android:text="Plate Recognition"
-            android:layout_toEndOf="@+id/imageView" />
+            android:layout_toEndOf="@+id/imageButton" />
 
         <EditText
             android:id="@+id/plateNumber"
@@ -45,13 +46,13 @@
             android:layout_alignParentEnd="true"
             android:layout_below="@+id/text"
             android:text="12 가 3456"
-            android:layout_toEndOf="@+id/imageView" />
+            android:layout_toEndOf="@+id/imageButton" />
 
         <TextView
             android:id="@+id/Date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/imageView"
+            android:layout_below="@id/imageButton"
             android:text="Date:" />
 
         <TextView
@@ -74,12 +75,13 @@
             android:text="Item List" />
 
         <Button
+            android:id="@+id/posting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/plateNumber"
-            android:layout_marginTop="100dp"
             android:layout_marginLeft="290dp"
-            android:text="Posting"/>
+            android:layout_marginTop="100dp"
+            android:text="Posting" />
 
     </RelativeLayout>
 
