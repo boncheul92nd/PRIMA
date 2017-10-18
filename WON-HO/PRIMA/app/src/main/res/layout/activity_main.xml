@@ -4,30 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="kr.co.ipdisk.home35.ui.MainActivity">
+    tools:context="kr.kairas.prima.MainActivity">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Parking Regulation Integration Management Application"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        tools:layout_editor_absoluteX="24dp"
-        tools:layout_editor_absoluteY="48dp" />
+        tools:layout_editor_absoluteY="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="77dp" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
+        android:onClick="login"
         tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="218dp" />
+        tools:layout_editor_absoluteY="218dp"
+        android:layout_below="@+id/textView"
+        android:layout_alignStart="@+id/signup"
+        android:layout_marginTop="106dp" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign up"
+        android:onClick="signup"
         tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="281dp" />
+        tools:layout_editor_absoluteY="281dp"
+        android:layout_marginTop="19dp"
+        android:layout_below="@+id/login"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
