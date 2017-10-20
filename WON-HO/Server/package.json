@@ -1,5 +1,5 @@
 {
-  "name": "demo03",
+  "name": "Server",
   "version": "0.0.1",
   "dependencies": {
     "bcrypt": "^1.0.2",
