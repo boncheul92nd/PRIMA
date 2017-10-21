@@ -1,0 +1,50 @@
+//
+   Created by USER on 2017-09-04.
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title PRIMA
+    body
+        h1 상세 및 수정페이지
+
+        - var dayArrEng = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+        - var dayArrKor = ['월', '화', '수', '목', '금', '토', '일'];
+
+        - var date = result.date;
+        - var year = '20'+date.substring(0,2)+'년 ';
+        - var month = date.substring(2,4)+'월 ';
+        - var day = date.substring(4,6)+'일 ';
+        - var dow = dayArrKor[dayArrEng.indexOf(date.substring(7,10))];
+        - var h = date.substring(11,13);
+        - var m = date.substring(13,15);
+        - var s = date.substring(15,17);
+
+        table(border='2')
+            tr
+                td 레코드 식별자
+                td 단속일
+                td 위치
+                td 차량번호
+            tr
+                td(name='record') #{result.date}
+                td #{year + month + day + '(' + dow + ')'} #{h + '시 ' + m + '분 ' + s + '초'}
+                td #{result.location}
+                td #{result.number}
+                    button(onclick='editCarNumber()') 수정
+
+        form(enctype='multipart/form-data', action='/edit', method='post', id='editForm' hidden='true')
+            p
+                input(type='text' name='newNumber' placeholder='새로운 차 번호')
+            p
+                input(type='text' name='recordID' placeholder='레코드 아이디')
+            p
+                input(type='submit')
+
+    script.
+        function editCarNumber() {
+            var newNumber = prompt('차량 번호 수정하시겠습니까?\n수정하시려면 새로운 번호를 입력하십시오');
+            document.getElementsByName('newNumber')[0].value = newNumber;
+            document.getElementsByName('recordID')[0].value = document.getElementsByName('record')[0].innerHTML;
+            document.getElementById('editForm').submit();
+        }
