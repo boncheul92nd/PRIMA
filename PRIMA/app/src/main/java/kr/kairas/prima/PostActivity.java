@@ -4,9 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,9 +34,15 @@ import java.net.URL;
 
 public class PostActivity extends AppCompatActivity implements View.OnClickListener {
 
+    /**
+     * *******  File Path ************
+     */
+    final String uploadFilePath = "/storage/emulated/0/DCIM/";
+    final String uploadFileName = "test.png";
+
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
-    private static final int CROP_FROM_iMAGE = 2;
+//    private static final int CROP_FROM_iMAGE = 2;
 
     private Uri mImageCaptureUri;
     private ImageButton iv_UserPhoto;
@@ -50,20 +53,18 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     TextView messageText;
     int serverResponseCode = 0;
     ProgressDialog dialog = null;
-    String upLoadServerUri = "http://10.3.234.247:8081/input";
+    String upLoadServerUri = "http://kairas.iptime.org:8083/input";
 
-    //private DB_Manger dbmanger;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        //dbmanger = new DB_Manger();
-
         iv_UserPhoto = (ImageButton) this.findViewById(R.id.imageButton);
-        Button btn_agreeJoin = (Button) this.findViewById(R.id.posting);
+        messageText = (TextView) findViewById(R.id.messageText);
+        Button posting = (Button) this.findViewById(R.id.posting);
 
-        btn_agreeJoin.setOnClickListener(this);
+        posting.setOnClickListener(this);
     }
 
     public void doTakePhotoAction() // 카메라 촬영 후 이미지 가져오기
@@ -105,27 +106,21 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             case PICK_FROM_CAMERA: {
                 // 이미지를 가져온 이후의 리사이즈할 이미지 크기를 결정합니다.
                 // 이후에 이미지 크롭 어플리케이션을 호출하게 됩니다.
-                Intent intent = new Intent("com.android.camera.action.CROP");
-                intent.setDataAndType(mImageCaptureUri, "image/*");
+//                Intent intent = new Intent("com.android.camera.action.CROP");
+//                intent.setDataAndType(mImageCaptureUri, "image/*");
 
-                //CROP할 이미지를 200*200 크기로 저장
-                intent.putExtra("outputX", 200); // CROP한 이미지의 x축 크기
-                intent.putExtra("outputY", 200); // CROP한 이미지의 y축 크기
-                intent.putExtra("aspectX", 1); // CROP 박스의 X축 비율
-                intent.putExtra("aspectY", 1); // CROP 박스의 Y축 비율
-                intent.putExtra("scale", true);
-                intent.putExtra("return-data", true);
-                ImageView image = (ImageView) findViewById(R.id.imageButton);
-                Bitmap bm = BitmapFactory.decodeFile(mImageCaptureUri.getPath().toString());
-                image.setImageBitmap(bm);
-
-                startActivityForResult(intent, CROP_FROM_iMAGE); // CROP_FROM_CAMERA case문 이동
-                break;
-            }
-            case CROP_FROM_iMAGE: {
-                // 크롭이 된 이후의 이미지를 넘겨 받습니다.
-                // 이미지뷰에 이미지를 보여준다거나 부가적인 작업 이후에
-                // 임시 파일을 삭제합니다.
+//                //CROP할 이미지를 200*200 크기로 저장
+//                intent.putExtra("outputX", 200); // CROP한 이미지의 x축 크기
+//                intent.putExtra("outputY", 200); // CROP한 이미지의 y축 크기
+//                intent.putExtra("aspectX", 1); // CROP 박스의 X축 비율
+//                intent.putExtra("aspectY", 1); // CROP 박스의 Y축 비율
+//                intent.putExtra("scale", true);
+//                intent.putExtra("return-data", true);
+//                ImageView image = (ImageView) findViewById(R.id.imageButton);
+//                Bitmap bm = BitmapFactory.decodeFile(mImageCaptureUri.getPath().toString());
+//                image.setImageBitmap(bm);
+//
+//                startActivityForResult(intent, CROP_FROM_iMAGE); // CROP_FROM_CAMERA case문 이동
                 if (resultCode != RESULT_OK) {
                     return;
                 }
@@ -145,19 +140,24 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     storeCropImage(photo, filePath); // CROP된 이미지를 외부저장소, 앨범에 저장한다.
                     absoultePath = filePath;
 
-
-                    //uploadFile(absoultePath);
-
+                    uploadFile(absoultePath);
 
                     break;
 
                 }
-                // 임시 파일 삭제
-                //File f = new File(mImageCaptureUri.getPath());
-                // if (f.exists()) {
-                //     f.delete();
-                //}
+                break;
             }
+//            case CROP_FROM_iMAGE: {
+//                // 크롭이 된 이후의 이미지를 넘겨 받습니다.
+//                // 이미지뷰에 이미지를 보여준다거나 부가적인 작업 이후에
+//                // 임시 파일을 삭제합니다.
+
+//                // 임시 파일 삭제
+//                //File f = new File(mImageCaptureUri.getPath());
+//                // if (f.exists()) {
+//                //     f.delete();
+//                //}
+//            }
         }
     }
 
@@ -165,18 +165,31 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         id_view = v.getId();
         if (id_view == R.id.posting) {
-            /** SharedPreference 환경 변수 사용 **/
-            SharedPreferences prefs = getSharedPreferences("login", 0);
-            /** prefs.getString() return값이 null이라면 2번째 함수를 대입한다. **/
-            String login = prefs.getString("USER_LOGIN", "LOGOUT");
-            String facebook_login = prefs.getString("FACEBOOK_LOGIN", "LOGOUT");
-            String user_id = prefs.getString("USER_ID", "");
-            String user_name = prefs.getString("USER_NAME", "");
-            String user_password = prefs.getString("USER_PASSWORD", "");
-            String user_phone = prefs.getString("USER_PHONE", "");
-            String user_email = prefs.getString("USER_EMAIL", "");
-            //dbmanger.select(user_id,user_name,user_password, user_phone, user_email);
-            //dbmanger.selectPhoto(user_name, mImageCaptureUri, absoultePath);
+//            /** SharedPreference 환경 변수 사용 **/
+//            SharedPreferences prefs = getSharedPreferences("login", 0);
+//            /** prefs.getString() return값이 null이라면 2번째 함수를 대입한다. **/
+//            String login = prefs.getString("USER_LOGIN", "LOGOUT");
+//            String facebook_login = prefs.getString("FACEBOOK_LOGIN", "LOGOUT");
+//            String user_id = prefs.getString("USER_ID", "");
+//            String user_name = prefs.getString("USER_NAME", "");
+//            String user_password = prefs.getString("USER_PASSWORD", "");
+//            String user_phone = prefs.getString("USER_PHONE", "");
+//            String user_email = prefs.getString("USER_EMAIL", "");
+
+            dialog = ProgressDialog.show(PostActivity.this, "", "Uploading file...", true);
+
+            new Thread(new Runnable() {
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            messageText.setText("uploading started.....");
+                        }
+                    });
+
+                    uploadFile(uploadFilePath + "" + uploadFileName);
+
+                }
+            }).start();
 
             Intent mainIntent = new Intent(PostActivity.this, PostActivity.class);
             PostActivity.this.startActivity(mainIntent);
@@ -223,7 +236,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         String dirPath = "/storage/emulated/0/DCIM/";
         File directory_SmartWheel = new File(dirPath);
 
-        if (!directory_SmartWheel.exists()) // SmartWheel 디렉터리에 폴더가 없다면 (새로 이미지를 저장할 경우에 속한다.)
+        if (!directory_SmartWheel.exists())
             directory_SmartWheel.mkdir();
 
         File copyFile = new File(filePath);
@@ -245,10 +258,8 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
+
     public int uploadFile(String sourceFileUri) {
-
-
-        String fileName = sourceFileUri;
 
         HttpURLConnection conn = null;
         DataOutputStream dos = null;
@@ -265,12 +276,12 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             dialog.dismiss();
 
             Log.e("uploadFile", "Source File not exist :"
-                    + sourceFileUri);
+                    + uploadFilePath + "" + uploadFileName);
 
             runOnUiThread(new Runnable() {
                 public void run() {
                     messageText.setText("Source File not exist :"
-                    );
+                            + uploadFilePath + "" + uploadFileName);
                 }
             });
 
@@ -292,13 +303,13 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 conn.setRequestProperty("Connection", "Keep-Alive");
                 conn.setRequestProperty("ENCTYPE", "multipart/form-data");
                 conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                conn.setRequestProperty("uploaded_file", fileName);
+                conn.setRequestProperty("uploaded_file", sourceFileUri);
 
                 dos = new DataOutputStream(conn.getOutputStream());
 
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
                 dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
-                        + fileName + "\"" + lineEnd);
+                        + sourceFileUri + "\"" + lineEnd);
 
                 dos.writeBytes(lineEnd);
 
