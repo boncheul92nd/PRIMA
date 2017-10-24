@@ -117,5 +117,5 @@ function genDirnames() {
     return filename;
 }
 app.listen(8083, function () {
-    console.log("log: 8082번 포트에서 동작중");
+    console.log("log: 8083번 포트에서 동작중");
 });
