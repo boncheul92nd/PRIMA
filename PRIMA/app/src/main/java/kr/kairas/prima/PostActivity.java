@@ -42,15 +42,16 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
-//    private static final int CROP_FROM_iMAGE = 2;
+
+    private ImageButton iv_UserPhoto;
+    private TextView messageText;
+    private Button posting;
 
     private Uri mImageCaptureUri;
-    private ImageButton iv_UserPhoto;
     private int id_view;
     private String absoultePath;
 
     //file upload
-    TextView messageText;
     int serverResponseCode = 0;
     ProgressDialog dialog = null;
     String upLoadServerUri = "http://kairas.iptime.org:8083/input";
@@ -61,8 +62,8 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_post);
 
         iv_UserPhoto = (ImageButton) this.findViewById(R.id.imageButton);
-        messageText = (TextView) findViewById(R.id.messageText);
-        Button posting = (Button) this.findViewById(R.id.posting);
+        messageText = (TextView) this.findViewById(R.id.messageText);
+        posting = (Button) this.findViewById(R.id.posting);
 
         posting.setOnClickListener(this);
     }
@@ -75,7 +76,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
         mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
 
-        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+         intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
         startActivityForResult(intent, PICK_FROM_CAMERA);
     }
 
@@ -100,7 +101,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 // 실제 코드에서는 좀더 합리적인 방법을 선택하시기 바랍니다.
                 mImageCaptureUri = data.getData();
 
-                Log.d("SmartWheel", mImageCaptureUri.getPath().toString());
+                Log.d("PICK_FROM_ALBUM", mImageCaptureUri.getPath().toString());
             }
 
             case PICK_FROM_CAMERA: {
