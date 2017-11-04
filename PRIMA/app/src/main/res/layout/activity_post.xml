@@ -17,6 +17,7 @@
             android:layout_height="150dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
             app:srcCompat="@android:color/holo_blue_bright" />
 
         <Button

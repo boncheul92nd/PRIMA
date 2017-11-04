@@ -34,14 +34,9 @@ import java.net.URL;
 
 public class PostActivity extends AppCompatActivity implements View.OnClickListener {
 
-    /**
-     * *******  File Path ************
-     */
-    final String uploadFilePath = "/storage/emulated/0/DCIM/";
-    final String uploadFileName = "test.png";
-
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
+    private static final int CROP_FROM_IMAGE = 2;
 
     private ImageButton iv_UserPhoto;
     private TextView messageText;
@@ -76,7 +71,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
         mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
 
-         intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
         startActivityForResult(intent, PICK_FROM_CAMERA);
     }
 
@@ -107,21 +102,24 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             case PICK_FROM_CAMERA: {
                 // 이미지를 가져온 이후의 리사이즈할 이미지 크기를 결정합니다.
                 // 이후에 이미지 크롭 어플리케이션을 호출하게 됩니다.
-//                Intent intent = new Intent("com.android.camera.action.CROP");
-//                intent.setDataAndType(mImageCaptureUri, "image/*");
+                Intent intent = new Intent("com.android.camera.action.CROP");
+                intent.setDataAndType(mImageCaptureUri, "image/*");
 
-//                //CROP할 이미지를 200*200 크기로 저장
-//                intent.putExtra("outputX", 200); // CROP한 이미지의 x축 크기
-//                intent.putExtra("outputY", 200); // CROP한 이미지의 y축 크기
-//                intent.putExtra("aspectX", 1); // CROP 박스의 X축 비율
-//                intent.putExtra("aspectY", 1); // CROP 박스의 Y축 비율
-//                intent.putExtra("scale", true);
-//                intent.putExtra("return-data", true);
-//                ImageView image = (ImageView) findViewById(R.id.imageButton);
-//                Bitmap bm = BitmapFactory.decodeFile(mImageCaptureUri.getPath().toString());
-//                image.setImageBitmap(bm);
-//
-//                startActivityForResult(intent, CROP_FROM_iMAGE); // CROP_FROM_CAMERA case문 이동
+                // CROP할 이미지를 200*200 크기로 저장
+                intent.putExtra("outputX", 400); // CROP한 이미지의 x축 크기
+                intent.putExtra("outputY", 400); // CROP한 이미지의 y축 크기
+                intent.putExtra("aspectX", 1); // CROP 박스의 X축 비율
+                intent.putExtra("aspectY", 1); // CROP 박스의 Y축 비율
+                intent.putExtra("scale", true);
+                intent.putExtra("return-data", true);
+                startActivityForResult(intent, CROP_FROM_IMAGE); // CROP_FROM_CAMERA case문 이동
+                break;
+            }
+
+            case CROP_FROM_IMAGE: {
+                // 크롭이 된 이후의 이미지를 넘겨 받습니다.
+                // 이미지뷰에 이미지를 보여준다거나 부가적인 작업 이후에
+                // 임시 파일을 삭제합니다.
                 if (resultCode != RESULT_OK) {
                     return;
                 }
@@ -129,10 +127,8 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 final Bundle extras = data.getExtras();
 
                 // CROP된 이미지를 저장하기 위한 FILE 경로
-                //String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                //        "/SmartWheel/" + System.currentTimeMillis() + "kor.jpg";
-                String filePath = "/storage/emulated/0/DCIM/" + System.currentTimeMillis() + "kor.jpg";
-
+                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                        "/prima/" + System.currentTimeMillis() + ".jpg";
 
                 if (extras != null) {
                     Bitmap photo = extras.getParcelable("data"); // CROP된 BITMAP
@@ -140,25 +136,17 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
                     storeCropImage(photo, filePath); // CROP된 이미지를 외부저장소, 앨범에 저장한다.
                     absoultePath = filePath;
-
-                    uploadFile(absoultePath);
-
-                    break;
-
                 }
-                break;
-            }
-//            case CROP_FROM_iMAGE: {
-//                // 크롭이 된 이후의 이미지를 넘겨 받습니다.
-//                // 이미지뷰에 이미지를 보여준다거나 부가적인 작업 이후에
-//                // 임시 파일을 삭제합니다.
 
-//                // 임시 파일 삭제
-//                //File f = new File(mImageCaptureUri.getPath());
-//                // if (f.exists()) {
-//                //     f.delete();
-//                //}
-//            }
+                // 임시 파일 삭제
+                File f = new File(mImageCaptureUri.getPath());
+                if (f.exists()) {
+                    f.delete();
+                }
+            }
+
+            break;
+
         }
     }
 
@@ -166,36 +154,14 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         id_view = v.getId();
         if (id_view == R.id.posting) {
-//            /** SharedPreference 환경 변수 사용 **/
-//            SharedPreferences prefs = getSharedPreferences("login", 0);
-//            /** prefs.getString() return값이 null이라면 2번째 함수를 대입한다. **/
-//            String login = prefs.getString("USER_LOGIN", "LOGOUT");
-//            String facebook_login = prefs.getString("FACEBOOK_LOGIN", "LOGOUT");
-//            String user_id = prefs.getString("USER_ID", "");
-//            String user_name = prefs.getString("USER_NAME", "");
-//            String user_password = prefs.getString("USER_PASSWORD", "");
-//            String user_phone = prefs.getString("USER_PHONE", "");
-//            String user_email = prefs.getString("USER_EMAIL", "");
 
             dialog = ProgressDialog.show(PostActivity.this, "", "Uploading file...", true);
 
-            new Thread(new Runnable() {
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            messageText.setText("uploading started.....");
-                        }
-                    });
+            messageText.setText("uploading started.....");
 
-                    uploadFile(uploadFilePath + "" + uploadFileName);
-
-                }
-            }).start();
-
-            Intent mainIntent = new Intent(PostActivity.this, PostActivity.class);
-            PostActivity.this.startActivity(mainIntent);
-            PostActivity.this.finish();
-            Toast.makeText(this, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+            if (uploadFile(absoultePath) != 0) {
+                Toast.makeText(this, "사진 전송이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+            }
 
         } else if (id_view == R.id.imageButton) {
             DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
@@ -233,12 +199,18 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void storeCropImage(Bitmap bitmap, String filePath) {
         // SmartWheel 폴더를 생성하여 이미지를 저장하는 방식이다.
-//        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SmartWheel";
-        String dirPath = "/storage/emulated/0/DCIM/";
-        File directory_SmartWheel = new File(dirPath);
+        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/prima";
+        File prima = new File(dirPath);
 
-        if (!directory_SmartWheel.exists())
-            directory_SmartWheel.mkdir();
+        boolean isDirectoryCreated=prima.exists();
+
+        if (!isDirectoryCreated) {
+            isDirectoryCreated= prima.mkdirs();
+        }
+        if(isDirectoryCreated) {
+            Toast.makeText(PostActivity.this, dirPath+" mkdir",
+                    Toast.LENGTH_SHORT).show();
+        }
 
         File copyFile = new File(filePath);
         BufferedOutputStream out = null;
@@ -269,20 +241,20 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         String boundary = "*****";
         int bytesRead, bytesAvailable, bufferSize;
         byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-        File sourceFile = new File(sourceFileUri);
+        int maxBufferSize = 1024 * 1024;
+        final File sourceFile = new File(sourceFileUri);
 
         if (!sourceFile.isFile()) {
 
             dialog.dismiss();
 
             Log.e("uploadFile", "Source File not exist :"
-                    + uploadFilePath + "" + uploadFileName);
+                    + sourceFileUri);
 
             runOnUiThread(new Runnable() {
                 public void run() {
                     messageText.setText("Source File not exist :"
-                            + uploadFilePath + "" + uploadFileName);
+                            + sourceFile);
                 }
             });
 
