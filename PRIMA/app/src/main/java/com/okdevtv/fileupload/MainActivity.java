@@ -75,11 +75,16 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (uploadFile(absolutePath) != 0) {
-                    Toast.makeText(MainActivity.this, "사진 전송이 완료되었습니다", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "사진 전송이 실패하였습니다", Toast.LENGTH_SHORT).show();
-                }
+                new Thread() {
+                    public void run() {
+                        if (uploadFile(absolutePath) == 200) {
+                            Toast.makeText(MainActivity.this, "사진 전송이 완료되었습니다", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "사진 전송이 실패하였습니다", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }.run();
+
             }
         });
     }
@@ -200,17 +205,8 @@ public class MainActivity extends AppCompatActivity {
 
     public int uploadFile(String sourceFileUri) {
 
-        String fileName = sourceFileUri;
-
-        HttpURLConnection conn = null;
-        DataOutputStream dos = null;
-        String lineEnd = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
-        int bytesRead, bytesAvailable, bufferSize;
-        byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-        File sourceFile = new File(sourceFileUri);
+        final String fileName = sourceFileUri;
+        final File sourceFile = new File(sourceFileUri);
 
         if (!sourceFile.isFile()) {
 
@@ -227,113 +223,128 @@ public class MainActivity extends AppCompatActivity {
             return 0;
 
         } else {
-            try {
+            new Thread() {
+                public void run() {
 
-                // open a URL connection to the Servlet
-                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                URL url = new URL(upLoadServerUri);
+                    HttpURLConnection conn = null;
+                    DataOutputStream dos = null;
+                    String lineEnd = "\r\n";
+                    String twoHyphens = "--";
+                    String boundary = "*****";
+                    int bytesRead, bytesAvailable, bufferSize;
+                    byte[] buffer;
+                    int maxBufferSize = 1 * 1024 * 1024;
 
-                // Open a HTTP  connection to  the URL
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true); // Allow Inputs
-                conn.setDoOutput(true); // Allow Outputs
-                conn.setUseCaches(false); // Don't use a Cached Copy
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                conn.setRequestProperty("uploaded_file", fileName);
+                    try {
 
-                dos = new DataOutputStream(conn.getOutputStream());
+                        // open a URL connection to the Servlet
+                        FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                        URL url = new URL(upLoadServerUri);
 
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
-                        + fileName + "\"" + lineEnd);
+                        // Open a HTTP  connection to  the URL
+                        conn = (HttpURLConnection) url.openConnection();
+                        conn.setDoInput(true); // Allow Inputs
+                        conn.setDoOutput(true); // Allow Outputs
+                        conn.setUseCaches(false); // Don't use a Cached Copy
+                        conn.setRequestMethod("POST");
+                        conn.setRequestProperty("Connection", "Keep-Alive");
+                        conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                        conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                        conn.setRequestProperty("uploaded_file", fileName);
 
-                dos.writeBytes(lineEnd);
+                        dos = new DataOutputStream(conn.getOutputStream());
 
-                // create a buffer of  maximum size
-                bytesAvailable = fileInputStream.available();
+                        dos.writeBytes(twoHyphens + boundary + lineEnd);
+                        dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
+                                + fileName + "\"" + lineEnd);
 
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                buffer = new byte[bufferSize];
+                        dos.writeBytes(lineEnd);
 
-                // read file and write it into form...
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                        // create a buffer of  maximum size
+                        bytesAvailable = fileInputStream.available();
 
-                while (bytesRead > 0) {
+                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                        buffer = new byte[bufferSize];
 
-                    dos.write(buffer, 0, bufferSize);
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                        // read file and write it into form...
+                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
-                }
+                        while (bytesRead > 0) {
 
-                // send multipart form data necesssary after file data...
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                            dos.write(buffer, 0, bufferSize);
+                            bytesAvailable = fileInputStream.available();
+                            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
-                // Responses from the server (code and message)
-                serverResponseCode = conn.getResponseCode();
-                String serverResponseMessage = conn.getResponseMessage();
-
-                Log.i("uploadFile", "HTTP Response is : "
-                        + serverResponseMessage + ": " + serverResponseCode);
-
-                if (serverResponseCode == 200) {
-                    BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()), 8192);
-                    final StringBuilder response = new StringBuilder();
-                    String strLine = null;
-                    while ((strLine = input.readLine()) != null) {
-                        response.append(strLine);
-                    }
-                    input.close();
-
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-
-                            messageText.setText("File Upload Completed.");
-
-                            String msg = "File Upload Completed.\n See uploaded file here : \n"
-                                    + response.toString();
-
-                            script.setText(msg);
                         }
-                    });
+
+                        // send multipart form data necesssary after file data...
+                        dos.writeBytes(lineEnd);
+                        dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                        // Responses from the server (code and message)
+                        serverResponseCode = conn.getResponseCode();
+                        String serverResponseMessage = conn.getResponseMessage();
+
+                        Log.i("uploadFile", "HTTP Response is : "
+                                + serverResponseMessage + ": " + serverResponseCode);
+
+                        if (serverResponseCode == 200) {
+                            BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()), 8192);
+                            final StringBuilder response = new StringBuilder();
+                            String strLine = null;
+                            while ((strLine = input.readLine()) != null) {
+                                response.append(strLine);
+                            }
+                            input.close();
+
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+
+                                    messageText.setText("File Upload Completed.");
+
+                                    String msg = "File Upload Completed.\n See uploaded file here : \n"
+                                            + response.toString();
+
+                                    script.setText(msg);
+                                }
+                            });
+                        }
+
+                        //close the streams //
+                        fileInputStream.close();
+                        dos.flush();
+                        dos.close();
+
+                    } catch (MalformedURLException ex) {
+
+                        ex.printStackTrace();
+
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                messageText.setText("MalformedURLException Exception : check script url.");
+                                Toast.makeText(MainActivity.this, "MalformedURLException",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                messageText.setText("Got Exception : see logcat ");
+                                Toast.makeText(MainActivity.this, "Got Exception : see logcat ",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        Log.e("Upload file Exception", "Exception : " + e.getMessage(), e);
+                    }
                 }
+            }.run();
 
-                //close the streams //
-                fileInputStream.close();
-                dos.flush();
-                dos.close();
-
-            } catch (MalformedURLException ex) {
-
-                ex.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        messageText.setText("MalformedURLException Exception : check script url.");
-                        Toast.makeText(MainActivity.this, "MalformedURLException",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-            } catch (Exception e) {
-
-                e.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        messageText.setText("Got Exception : see logcat ");
-                        Toast.makeText(MainActivity.this, "Got Exception : see logcat ",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-                Log.e("Upload file Exception", "Exception : " + e.getMessage(), e);
-            }
             return serverResponseCode;
 
         } // End else block
