@@ -1,10 +1,14 @@
 package com.okdevtv.fileupload;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,7 +16,6 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,16 +42,15 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton imageButton5;
 
     private TextView script;
-
     private TextView messageText;
-    private Button posting;
 
     private Uri mImageCaptureUri;
     private int id_view;
     private String absolutePath;
 
-    int serverResponseCode = 0;
-    String upLoadServerUri = "http://kairas.iptime.org:8083/input";
+    private int serverResponseCode = 0;
+    private String upLoadServerUri = "http://kairas.iptime.org:8083/input";
+    private ProgressDialog dialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,31 +64,8 @@ public class MainActivity extends AppCompatActivity {
         imageButton5 = (ImageButton) this.findViewById(R.id.imageButton5);
 
         script = (TextView) this.findViewById(R.id.script);
-
         messageText = (TextView) this.findViewById(R.id.messageText);
-        posting = (Button) this.findViewById(R.id.posting);
 
-        posting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (imageButton1.getDrawable() == null) {
-                    Toast.makeText(MainActivity.this, "메인 사진을 등록하셔야 합니다", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                new Thread() {
-                    public void run() {
-                        if (uploadFile(absolutePath) == 200) {
-                            Toast.makeText(MainActivity.this, "사진 전송이 완료되었습니다", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "사진 전송이 실패하였습니다", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }.run();
-
-            }
-        });
     }
 
     public void onClick(View v) {
@@ -135,12 +114,6 @@ public class MainActivity extends AppCompatActivity {
     public void doTakePhotoAction() // 카메라 촬영 후 이미지 가져오기
     {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        // 임시로 사용할 파일의 경로를 생성
-        String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-        mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-
-        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
         startActivityForResult(intent, PICK_FROM_CAMERA);
     }
 
@@ -160,32 +133,31 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         mImageCaptureUri = data.getData();
-
         absolutePath = getRealPathFromURI(mImageCaptureUri);
+
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(absolutePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int exifDegree = exifOrientationToDegrees(exifOrientation);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);//경로를 통해 비트맵으로 전환
 
         Log.d("******PRIMA******", absolutePath);
 
-        if (absolutePath != null) {
-
-            Bitmap photo = null;
-            try {
-                photo = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if ( id_view == R.id.imageButton1) {
-                imageButton1.setImageBitmap(photo); // 레이아웃의 이미지칸에 CROP된 BITMAP을 보여줌
-            } else if (id_view == R.id.imageButton2) {
-                imageButton2.setImageBitmap(photo); // 레이아웃의 이미지칸에 CROP된 BITMAP1을 보여줌
-            } else if (id_view == R.id.imageButton3) {
-                imageButton3.setImageBitmap(photo); // 레이아웃의 이미지칸에 CROP된 BITMAP을 보여줌
-            } else if (id_view == R.id.imageButton4) {
-                imageButton4.setImageBitmap(photo); // 레이아웃의 이미지칸에 CROP된 BITMAP을 보여줌
-            } else if (id_view == R.id.imageButton5) {
-                imageButton5.setImageBitmap(photo); // 레이아웃의 이미지칸에 CROP된 BITMAP을 보여줌
-            }
-
+        if (id_view == R.id.imageButton1) {
+            imageButton1.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
+        } else if (id_view == R.id.imageButton2) {
+            imageButton1.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
+        } else if (id_view == R.id.imageButton3) {
+            imageButton1.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
+        } else if (id_view == R.id.imageButton4) {
+            imageButton1.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
+        } else if (id_view == R.id.imageButton5) {
+            imageButton1.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
         }
     }
 
@@ -201,6 +173,42 @@ public class MainActivity extends AppCompatActivity {
             cursor.close();
         }
         return result;
+    }
+
+    public void Posting(View v) {
+
+        if (imageButton1.getDrawable() == null) {
+            Toast.makeText(MainActivity.this, "메인 사진을 등록하셔야 합니다", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                messageText.setText("uploading started.....");
+                dialog = ProgressDialog.show(MainActivity.this, "", "Uploading file...", true);
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (uploadFile(absolutePath) == 200) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "사진 전송이 완료되었습니다", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "사진 전송이 실패하였습니다", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                dialog.dismiss();
+            }
+        }).start();
     }
 
     public int uploadFile(String sourceFileUri) {
@@ -223,130 +231,144 @@ public class MainActivity extends AppCompatActivity {
             return 0;
 
         } else {
-            new Thread() {
-                public void run() {
+            try {
+                HttpURLConnection conn = null;
+                DataOutputStream dos = null;
+                String lineEnd = "\r\n";
+                String twoHyphens = "--";
+                String boundary = "*****";
+                int bytesRead, bytesAvailable, bufferSize;
+                byte[] buffer;
+                int maxBufferSize = 1 * 1024 * 1024;
 
-                    HttpURLConnection conn = null;
-                    DataOutputStream dos = null;
-                    String lineEnd = "\r\n";
-                    String twoHyphens = "--";
-                    String boundary = "*****";
-                    int bytesRead, bytesAvailable, bufferSize;
-                    byte[] buffer;
-                    int maxBufferSize = 1 * 1024 * 1024;
+                // open a URL connection to the Servlet
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                URL url = new URL(upLoadServerUri);
 
-                    try {
+                // Open a HTTP  connection to  the URL
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true); // Allow Inputs
+                conn.setDoOutput(true); // Allow Outputs
+                conn.setUseCaches(false); // Don't use a Cached Copy
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setRequestProperty("uploaded_file", fileName);
 
-                        // open a URL connection to the Servlet
-                        FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                        URL url = new URL(upLoadServerUri);
+                dos = new DataOutputStream(conn.getOutputStream());
 
-                        // Open a HTTP  connection to  the URL
-                        conn = (HttpURLConnection) url.openConnection();
-                        conn.setDoInput(true); // Allow Inputs
-                        conn.setDoOutput(true); // Allow Outputs
-                        conn.setUseCaches(false); // Don't use a Cached Copy
-                        conn.setRequestMethod("POST");
-                        conn.setRequestProperty("Connection", "Keep-Alive");
-                        conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-                        conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                        conn.setRequestProperty("uploaded_file", fileName);
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
+                        + fileName + "\"" + lineEnd);
 
-                        dos = new DataOutputStream(conn.getOutputStream());
+                dos.writeBytes(lineEnd);
 
-                        dos.writeBytes(twoHyphens + boundary + lineEnd);
-                        dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
-                                + fileName + "\"" + lineEnd);
+                // create a buffer of  maximum size
+                bytesAvailable = fileInputStream.available();
 
-                        dos.writeBytes(lineEnd);
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
 
-                        // create a buffer of  maximum size
-                        bytesAvailable = fileInputStream.available();
+                // read file and write it into form...
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
-                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                        buffer = new byte[bufferSize];
+                while (bytesRead > 0) {
 
-                        // read file and write it into form...
-                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
-                        while (bytesRead > 0) {
-
-                            dos.write(buffer, 0, bufferSize);
-                            bytesAvailable = fileInputStream.available();
-                            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                        }
-
-                        // send multipart form data necesssary after file data...
-                        dos.writeBytes(lineEnd);
-                        dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                        // Responses from the server (code and message)
-                        serverResponseCode = conn.getResponseCode();
-                        String serverResponseMessage = conn.getResponseMessage();
-
-                        Log.i("uploadFile", "HTTP Response is : "
-                                + serverResponseMessage + ": " + serverResponseCode);
-
-                        if (serverResponseCode == 200) {
-                            BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()), 8192);
-                            final StringBuilder response = new StringBuilder();
-                            String strLine = null;
-                            while ((strLine = input.readLine()) != null) {
-                                response.append(strLine);
-                            }
-                            input.close();
-
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-
-                                    messageText.setText("File Upload Completed.");
-
-                                    String msg = "File Upload Completed.\n See uploaded file here : \n"
-                                            + response.toString();
-
-                                    script.setText(msg);
-                                }
-                            });
-                        }
-
-                        //close the streams //
-                        fileInputStream.close();
-                        dos.flush();
-                        dos.close();
-
-                    } catch (MalformedURLException ex) {
-
-                        ex.printStackTrace();
-
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                messageText.setText("MalformedURLException Exception : check script url.");
-                                Toast.makeText(MainActivity.this, "MalformedURLException",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                        Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-                    } catch (Exception e) {
-
-                        e.printStackTrace();
-
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                messageText.setText("Got Exception : see logcat ");
-                                Toast.makeText(MainActivity.this, "Got Exception : see logcat ",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        Log.e("Upload file Exception", "Exception : " + e.getMessage(), e);
-                    }
                 }
-            }.run();
+
+                // send multipart form data necesssary after file data...
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                // Responses from the server (code and message)
+                serverResponseCode = conn.getResponseCode();
+                String serverResponseMessage = conn.getResponseMessage();
+
+                Log.i("uploadFile", "HTTP Response is : "
+                        + serverResponseMessage + ": " + serverResponseCode);
+
+                if (serverResponseCode == 200) {
+                    BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream()), 8192);
+                    final StringBuilder response = new StringBuilder();
+                    String strLine = null;
+                    while ((strLine = input.readLine()) != null) {
+                        response.append(strLine);
+                    }
+                    input.close();
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+
+                            messageText.setText("File Upload Completed.");
+
+                            String msg = "File Upload Completed.\n See uploaded file here : \n"
+                                    + response.toString();
+
+                            script.setText(msg);
+                        }
+                    });
+                }
+
+                //close the streams //
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+            } catch (MalformedURLException ex) {
+
+                ex.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        messageText.setText("MalformedURLException Exception : check script url.");
+                        Toast.makeText(MainActivity.this, "MalformedURLException",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        messageText.setText("Got Exception : see logcat ");
+                        Toast.makeText(MainActivity.this, "Got Exception : see logcat ",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.e("Upload file Exception", "Exception : " + e.getMessage(), e);
+            }
 
             return serverResponseCode;
-
         } // End else block
+    }
+
+    public int exifOrientationToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+    public Bitmap rotate(Bitmap src, float degree) {
+
+        // Matrix 객체 생성
+        Matrix matrix = new Matrix();
+        // 회전 각도 셋팅
+        matrix.postRotate(degree);
+        // 이미지와 Matrix 를 셋팅해서 Bitmap 객체 생성
+        return Bitmap.createBitmap(src, 0, 0, src.getWidth(),
+                src.getHeight(), matrix, true);
     }
 }

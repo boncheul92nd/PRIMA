@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/com.okdevtv.fileupload"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -90,7 +88,7 @@
             android:layout_below="@id/plateNumber"
             android:layout_marginLeft="290dp"
             android:layout_marginTop="100dp"
-            android:onClick="onClick"
+            android:onClick="Posting"
             android:text="Posting" />
 
     </RelativeLayout>
@@ -194,7 +192,6 @@
         android:id="@+id/script"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/imageButton5"
-        />
+        android:layout_below="@id/imageButton5" />
 
 </RelativeLayout>
